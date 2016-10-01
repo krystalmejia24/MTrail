@@ -1,4 +1,4 @@
-angular.module('mTrail').controller('CoreController', ['$scope', '$state', 'leafletData', '$http', '$state', '$stateParams',
+angular.module('mTrail').controller('CountyController', ['$scope', '$state', 'leafletData', '$http', '$state', '$stateParams',
   function ($scope, $state, leafletData, $http, $state, $stateParams) {
 
   /**
@@ -8,7 +8,7 @@ angular.module('mTrail').controller('CoreController', ['$scope', '$state', 'leaf
     center: {
       lat: 29.6520,
 			lng: -82.3250,
-      zoom: 9
+      zoom: 13
     }
   });
 
@@ -30,12 +30,7 @@ angular.module('mTrail').controller('CoreController', ['$scope', '$state', 'leaf
         },
         onEachFeature: function (feature, layer) {
           layer.on('click', function (e) {
-            //Construct center of boundary
-            var poly = L.geoJson(feature);
-            var center = poly.getBounds().getCenter();
-            console.log(center);
-            //go to boundary view
-            $state.go('boundary', {'boundaryId': feature._id, 'center': center});
+            $state.go('boundary', {'boundaryId': feature._id});
           });
         }
       }
