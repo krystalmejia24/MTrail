@@ -1,1 +1,12 @@
-/* Empty. Add your own CSS if you like */
+
+html, body{
+    height: 100%;
+}
+#map {
+  width: 100vw;
+  height: 100vh;
+}
+#boundary-map {
+  width: 100vw;
+  height: 100vh;
+}
