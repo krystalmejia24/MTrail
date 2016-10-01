@@ -1,6 +1,25 @@
 
-angular.module('mTrail').controller('BoundaryController', ['$scope', 'leafletData', '$state', '$stateParams', '$http',
-  function ($scope, leafletData, $state, $stateParams, $http) {
+angular.module('mTrail').controller('BoundaryController', ['$scope',
+                                                          'leafletData',
+                                                          '$state',
+                                                          '$stateParams',
+                                                          '$http',
+                                                          '$ionicLoading',
+  function ($scope, leafletData, $state, $stateParams, $http, $ionicLoading) {
+
+  /**
+   *  Show loading indicator, styling based on platform
+   */
+  if (ionic.Platform.isIOS())
+  {
+    $ionicLoading.show({
+      template: 'Loading Property <br><br><ion-spinner icon="ios"></ion-spinner>'
+    });
+  } else {
+    $ionicLoading.show({
+      template: 'Loading Property <br><br><ion-spinner icon="android"></ion-spinner>'
+    });
+  }
 
   /**
    *  Initialize map w/ default params
@@ -21,7 +40,6 @@ angular.module('mTrail').controller('BoundaryController', ['$scope', 'leafletDat
    */
   $http.get("https://act-trailblazer.herokuapp.com/api/boundaries/" + $stateParams.boundaryId)
   .success(function(data, status) {
-    $scope.boundary = data;
     angular.extend($scope, {
       geojson: {
         data: data,
@@ -40,6 +58,8 @@ angular.module('mTrail').controller('BoundaryController', ['$scope', 'leafletDat
         }
       }
     });
+    $scope.boundary = data;
+    $ionicLoading.hide();
   });
 
 }]);
