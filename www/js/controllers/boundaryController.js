@@ -11,8 +11,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
   /**
    *  Show loading indicator, styling based on platform
    */
-  if (ionic.Platform.isIOS())
-  {
+  if (ionic.Platform.isIOS()) {
     $ionicLoading.show({
       template: 'Loading Property <br><br><ion-spinner icon="ios"></ion-spinner>'
     });
