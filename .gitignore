@@ -5,3 +5,4 @@ resources/
 plugins/
 hooks/
 www/lib
+bower_components/
