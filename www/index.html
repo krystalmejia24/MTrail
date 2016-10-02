@@ -22,7 +22,7 @@
     <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <link href="lib/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet">
     <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
-    <link href="../bower_components/Ionicons/css/ionicons.min.css" rel="stylesheet">
+    <link href="lib/Ionicons/css/ionicons.min.css" rel="stylesheet">
 
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
@@ -50,31 +50,38 @@
     <script src="js/controllers/boundaryController.js"></script>
   </head>
 <body ng-app="mTrail">
-    <ion-pane>
-      <ion-header-bar class="bar-dark">
-        <button class="button button-clear icon ion-navicon"></button>
-        <h1 class="title">ACT
-          <!-- <img alt="logo" height="35" width="40" src="img/ACT-logo-2.png">
-          <img alt="logo" height="35" width="50" src="img/ACT-logo.png"> -->
-        </h1>
-      </ion-header-bar>
-      <ion-nav-view></ion-nav-view>
-      <!--
-      <div class="tabs tabs-icon-top">
-        <a class="tab-item">
-          <i class="icon ion-home"></i>
-          Home
-        </a>
-        <a class="tab-item">
-          <i class="icon ion-star"></i>
-          Favorites
-        </a>
-        <a class="tab-item">
-          <i class="icon ion-gear-a"></i>
-          Settings
-        </a>
-      </div>
-      -->
-    </ion-pane>
-  </body>
+  <ion-side-menus>
+
+    <ion-side-menu-content>
+      <ion-nav-bar class="bar-dark">
+        <ion-nav-title>ACT</ion-nav-title>
+
+        <ion-nav-buttons side="left">
+          <button class="button button-clear icon ion-navicon" menu-toggle="left"></button>
+        </ion-nav-buttons>
+      </ion-nav-bar>
+      <ion-nav-view animation="slide-left-right"></ion-nav-view>
+    </ion-side-menu-content>
+
+    <ion-side-menu side="left">
+      <header class="bar bar-header bar-stable">
+        <h1 class="title">Menu</h1>
+      </header>
+      <ion-content class="has-header">
+        <ion-list>
+          <ion-item nav-clear menu-close ui-sref="List">
+            List View
+          </ion-item>
+          <ion-item nav-clear menu-close ui-sref="county">
+            Map View
+          </ion-item>
+          <ion-item nav-clear menu-close ui-sref="settings">
+            Settings
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-side-menu>
+
+  </ion-side-menus>
+</body>
 </html>

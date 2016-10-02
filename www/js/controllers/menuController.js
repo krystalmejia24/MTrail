@@ -22,6 +22,13 @@ angular.module('mTrail').controller('MenuController', ['$scope', '$http', '$stat
   };
 
   /**
+   *  Go to settings
+   */
+  $scope.goToSettings = function () {
+    $state.go('settings');
+  };
+
+  /**
    *  Go to county map view
    */
   $scope.goToCounty = function () {
