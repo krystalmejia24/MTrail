@@ -1,7 +1,9 @@
-<ion-view title="Alachua County Map">
-
+<ion-view>
   <ion-content data-tap-disabled="true">
       <leaflet id="map" lf-center="center" geojson="geojson" tiles="tiles"></leaflet>
-  </ion-content>
 
+      <button id="settings" ng-click="openModal()"><i class="icon ion-gear-a"></i></button>
+      <button id="location"> <i class="icon ion-navigate"></i></button>
+      <!--<button id="home"> <i class="icon ion-home"></i></button>-->
+  </ion-content>
 </ion-view>

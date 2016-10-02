@@ -25,7 +25,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    *  Initialize map w/ default params
    */
   angular.extend($scope, {
-    tiles: Tiles.getTiles().Outdoors,
+    tiles: Tiles.getTiles('Outdoors'),
     center: {
       lat: 29.59599854794921,
 			lng: -82.24021911621094,
@@ -62,5 +62,12 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
     $scope.boundary = data;
     $ionicLoading.hide();
   });
+
+  /**
+   *  Change Tile settings
+   */
+   $scope.changeTiles = function (tile) {
+     $scope.tiles = Tiles.getTiles(tile);
+   };
 
 }]);

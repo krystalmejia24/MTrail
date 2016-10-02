@@ -1,6 +1,10 @@
 
-angular.module('mTrail').controller('MenuController', ['$scope', '$http', '$state', '$stateParams',
-  function ($scope, $http, $state, $stateParams) {
+angular.module('mTrail').controller('MenuController', ['$scope',
+                                                      '$http',
+                                                      '$state',
+                                                      '$stateParams',
+                                                      'Tiles',
+  function ($scope, $http, $state, $stateParams, Tiles) {
 
 
 

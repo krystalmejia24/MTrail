@@ -7,11 +7,6 @@ angular.module('mTrail').config(function($stateProvider, $urlRouterProvider) {
     templateUrl: 'templates/menu.html',
     controller: 'MenuController'
   })
-  .state('settings', {
-    url: '/settings',
-    templateUrl: 'templates/settings.html',
-    controller: 'MenuController'
-  })
   .state('list', {
     url: '/list',
     templateUrl: 'templates/list.html',

@@ -1,4 +1,5 @@
 angular.module('mTrail').service('Tiles', function () {
+
   var customTiles = {
     Default: {
       name: 'Mapbox Default',
@@ -49,8 +50,8 @@ angular.module('mTrail').service('Tiles', function () {
     }
   };
 
-  this.getTiles = function(){
-    return customTiles;
+  this.getTiles = function(tile){
+    return customTiles[tile];
   };
 
 });

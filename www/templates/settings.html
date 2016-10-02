@@ -1,9 +1,46 @@
-<ion-view title="Map Settings">
-  <ion-content ng-controller="MenuController">
-    <ion-list>
-      <ion-item>
-        View
-      </ion-item>
-    </ion-list>
-  </ion-content>
-</ion-view>
+  <ion-modal-view id="settings-modal">
+    <ion-content>
+      <div class="list card">
+        <div class="item item-divider">
+          <h2>Navigation</h2>
+          <i id="close" class="icon ion-close" ng-click="closeModal()"></i>
+        </div>
+        <a class="item item-icon-left" ng-click="goHome()">
+          <i class="icon ion-home"></i>
+          <h2>Go Home</h2>
+        </a>
+        <a class="item item-icon-left" ng-click="goBack()">
+          <i class="icon ion-ios-undo"></i>
+          <h2>Go Back</h2>
+        </a>
+        <div class="item item-divider">
+            <h2>Custom Maps</h2>
+        </div>
+        <a class="item item-thumbnail-left" ng-click="changeTiles('Default')">
+          <img src="../img/default.png">
+          <h2>Default</h2>
+          <p ng-show="isCurrentTile('Mapbox Default')">Current</p>
+        </a>
+        <a class="item item-thumbnail-left" ng-click="changeTiles('Outdoors')">
+          <img src="../img/outdoors.png">
+          <h2>Outdoors</h2>
+          <p ng-show="isCurrentTile('Mapbox Outdoors')">Current</p>
+        </a>
+        <a class="item item-thumbnail-left" ng-click="changeTiles('Basic')">
+          <img src="../img/basic.png">
+          <h2>Basic</h2>
+          <p ng-show="isCurrentTile('Mapbox Basic')">Current</p>
+        </a>
+        <a class="item item-thumbnail-left" ng-click="changeTiles('Dark')">
+          <img src="../img/dark.png">
+          <h2>Dark</h2>
+          <p ng-show="isCurrentTile('Mapbox Dark')">Current</p>
+        </a>
+        <a class="item item-thumbnail-left" ng-click="changeTiles('Satellite')">
+          <img src="../img/satellite.png">
+          <h2>Satellite</h2>
+          <p ng-show="isCurrentTile('Mapbox Satellite')">Current</p>
+        </a>
+      </div>
+    </ion-content>
+  </ion-modal-view>
