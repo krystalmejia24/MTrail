@@ -24,6 +24,7 @@ button#location i{
   background-color: white;
   border-radius: 4px;
   font-size: 22px;
+  padding-top:2px;
   line-height: 29px;
   width: 29px;
   height: 29px;
@@ -39,6 +40,7 @@ button#settings i{
   background-color: white;
   border-radius: 4px;
   font-size: 22px;
+  padding-top:1px;
   line-height: 29px;
   width: 29px;
   height: 29px;

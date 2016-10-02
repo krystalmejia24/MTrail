@@ -22,7 +22,6 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     });
   }
 
-
   /**
    *  Initialize Map
    */
@@ -110,6 +109,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     *  Back to main menu
     */
    $scope.goHome = function() {
+     $scope.closeModal();
      $state.go('menu');
    };
 
