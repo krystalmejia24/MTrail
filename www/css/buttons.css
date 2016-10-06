@@ -17,6 +17,15 @@ button#settings i{
   border-color: black;
 }
 */
+button#info{
+  position: absolute;
+  background-color: white;
+  border-radius: 15px;
+  top: 1vh;
+  right: 3vw;
+  font-weight: 500;
+  cursor: pointer;
+}
 button#location i{
   position: absolute;
   top: 85vh;
