@@ -6,7 +6,8 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
                                                           '$http',
                                                           '$ionicLoading',
                                                           'Tiles',
-  function ($scope, leafletData, $state, $stateParams, $http, $ionicLoading, Tiles) {
+                                                          '$ionicModal',
+  function ($scope, leafletData, $state, $stateParams, $http, $ionicLoading, Tiles, $ionicModal) {
 
   /**
    *  Show loading indicator, styling based on platform
@@ -68,6 +69,58 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    */
    $scope.changeTiles = function (tile) {
      $scope.tiles = Tiles.getTiles(tile);
+     $scope.closeModal();
    };
+
+   /**
+    *  Find Current Tile - Modal functionality
+    */
+   $scope.isCurrentTile = function (tileName) {
+     if ($scope.tiles.name === tileName) {
+       return true;
+     } else {
+       return false;
+     }
+   };
+
+   /**
+    *  Initialize Modal
+    */
+   $ionicModal.fromTemplateUrl('templates/settings.html', {
+       scope: $scope,
+       animation: 'slide-in-up'
+    }).then(function(modal) {
+       $scope.modal = modal;
+    });
+
+    /**
+     *  Open Modal
+     */
+    $scope.openModal = function() {
+      $scope.modal.show();
+    };
+
+    /**
+     *  Close Modal
+     */
+    $scope.closeModal = function() {
+      $scope.modal.hide();
+    };
+
+    /**
+     *  Back to main menu
+     */
+    $scope.goHome = function() {
+      $scope.closeModal();
+      $state.go('menu');
+    };
+
+    /**
+     *  Go Back
+     */
+    $scope.goBack = function() {
+      $scope.closeModal();
+      $ionicHistory.goBack(-1);
+    };
 
 }]);
