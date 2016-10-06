@@ -46,7 +46,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
       geojson: {
         data: data,
         style: {
-          fillColor: 'green',
+          fillColor: 'black',
           weight: 2,
           opacity: 0.5,
           color: 'black',
@@ -69,7 +69,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    */
    $scope.changeTiles = function (tile) {
      $scope.tiles = Tiles.getTiles(tile);
-     $scope.closeModal();
+     $scope.closeModalSettings();
    };
 
    /**
@@ -84,43 +84,43 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    };
 
    /**
-    *  Initialize Modal
+    *  Initialize Settings Modal
     */
    $ionicModal.fromTemplateUrl('templates/settings.html', {
        scope: $scope,
        animation: 'slide-in-up'
     }).then(function(modal) {
-       $scope.modal = modal;
+       $scope.modalSettings = modal;
     });
 
     /**
-     *  Open Modal
+     *  Open Settings Modal
      */
-    $scope.openModal = function() {
-      $scope.modal.show();
+    $scope.openModalSettings = function() {
+      $scope.modalSettings.show();
     };
 
     /**
-     *  Close Modal
+     *  Close Settings Modal
      */
-    $scope.closeModal = function() {
-      $scope.modal.hide();
+    $scope.closeModalSettings = function() {
+      $scope.modalSettings.hide();
     };
 
     /**
      *  Back to main menu
      */
     $scope.goHome = function() {
-      $scope.closeModal();
+      $scope.closeModalSettings();
       $state.go('menu');
     };
 
     /**
-     *  Go Back
+     *  Go to Property List
      */
-    $scope.goBack = function() {
-      $scope.closeModal();
-      $ionicHistory.goBack(-1);
+    $scope.viewList = function() {
+      $scope.closeModalSettings();
+      $state.go('list');
     };
 
 }]);
