@@ -108,19 +108,43 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
     };
 
     /**
-     *  Back to main menu
+     *  Initialize Settings Modal
      */
-    $scope.goHome = function() {
-      $scope.closeModalSettings();
-      $state.go('menu');
-    };
+    $ionicModal.fromTemplateUrl('templates/boundary-info.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+     }).then(function(modal) {
+        $scope.modalInfo = modal;
+     });
 
-    /**
-     *  Go to Property List
-     */
-    $scope.viewList = function() {
-      $scope.closeModalSettings();
-      $state.go('list');
-    };
+     /**
+      *  Open Info Modal
+      */
+     $scope.openModalInfo = function() {
+       $scope.modalInfo.show();
+     };
+
+     /**
+      *  Close Info Modal
+      */
+     $scope.closeModalInfo = function() {
+       $scope.modalInfo.hide();
+     };
+
+     /**
+      *  Back to main menu
+      */
+     $scope.goHome = function() {
+       $scope.closeModalSettings();
+       $state.go('menu');
+     };
+
+     /**
+      *  Go to Property List
+      */
+     $scope.viewList = function() {
+       $scope.closeModalSettings();
+       $state.go('list');
+     };
 
 }]);

@@ -1,0 +1,31 @@
+<ion-modal-view id="info-modal">
+  <ion-content>
+    <div class="list list-inset">
+        <div class="item item-divider">
+          <h2>Managing Information</h2>
+          <i id="close" class="icon ion-close" ng-click="closeModalInfo()"></i>
+        </div>
+        <div class="item">
+            <b>Institution: </b> {{boundary.properties.MGRINST}}
+        </div>
+        <div class="item">
+            <b>Manager: </b> {{boundary.properties.MANAME}}
+        </div>
+        <div class="item">
+            <b>Owner: </b> {{boundary.properties.OWNER}}
+        </div>
+        <div class="item">
+            <b>Website: </b><a ng-href="{{boundary.properties.MA_WEBSITE}}">Visit Here</a>
+        </div>
+        <div class="item item-divider">
+          <h2>Property Sizing</h2>
+        </div>
+        <div class="item">
+            <b>Area: </b> {{boundary.properties.AREA}}
+        </div>
+        <div class="item">
+            <b>Total Acres: </b> {{boundary.properties.TOTACRES}}
+        </div>
+    </div>
+  </ion-content>
+</ion-modal-view>
