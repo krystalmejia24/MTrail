@@ -35,6 +35,19 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
   });
 
   /**
+   *  Format boundary description for modal
+   */
+  $scope.formatBoundaryDescription = function() {
+      if($scope.boundary.properties.DESC2 !== 'ZZ'){
+          $scope.boundary.description = $scope.boundary.properties.DESC1 + $scope.boundary.properties.DESC2;
+      } else if ($scope.boundary.properties.DESC1 !== 'ZZ'){
+          $scope.boundary.description = $scope.boundary.properties.DESC1;
+      } else {
+          $scope.boundary.description = 'No description available. ';
+      }
+  }
+
+  /**
    *  Retrieve boundary map and set $scope.map to further extend
    */
   leafletData.getMap('boundary').then(function(map) {
@@ -67,7 +80,9 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
         }
       }
     });
+    // format boundary info
     $scope.boundary = data;
+    $scope.formatBoundaryDescription();
     $ionicLoading.hide();
   });
 
@@ -115,7 +130,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
     };
 
     /**
-     *  Initialize Settings Modal
+     *  Initialize Property Info Modal
      */
     $ionicModal.fromTemplateUrl('templates/boundary-info.html', {
         scope: $scope,
@@ -128,6 +143,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
       *  Open Info Modal
       */
      $scope.openModalInfo = function() {
+       $scope.directionsButton = true;
        $scope.modalInfo.show();
      };
 

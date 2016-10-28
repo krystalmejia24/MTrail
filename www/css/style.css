@@ -33,6 +33,9 @@ a.item-content:hover {
   width: 100vw;
   height: 100vh;
 }
+#modal-border{
+    border-radius: 20px;
+}
 #settings-modal {
   width: 90%;
   left: 5%;
@@ -43,11 +46,20 @@ a.item-content:hover {
 }
 #info-modal {
   width: 90%;
+  height: 100%;
   left: 5%;
   bottom: 5%;
   top: 5%;
   right: 5%;
   background-color: transparent;
+  text-align: center;
+}
+.item-info{
+    margin: 20px 25px;
+    font-size: 15px;
+}
+#description{
+    white-space: normal;
 }
 .modal-backdrop{
     height: 100%;

@@ -76,7 +76,8 @@ angular.module('mTrail').controller('CountyController', ['$scope',
         },
         onEachFeature: function (feature, layer) {
           layer.on('click', function (e) {
-            $state.go('boundary', {'boundaryId': feature._id});
+            $scope.boundary = feature;
+            $scope.openModalInfo();
           });
         }
       },
@@ -148,6 +149,19 @@ angular.module('mTrail').controller('CountyController', ['$scope',
   };
 
   /**
+   *  Format boundary description for modal
+   */
+  $scope.formatBoundaryDescription = function() {
+      if($scope.boundary.properties.DESC2 !== 'ZZ'){
+          $scope.boundary.description = $scope.boundary.properties.DESC1 + $scope.boundary.properties.DESC2;
+      } else if ($scope.boundary.properties.DESC1 !== 'ZZ'){
+          $scope.boundary.description = $scope.boundary.properties.DESC1;
+      } else {
+          $scope.boundary.description = 'No description available. ';
+      }
+  }
+
+  /**
    *  Initialize Settings Modal
    */
   $ionicModal.fromTemplateUrl('templates/settings.html', {
@@ -170,6 +184,40 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    $scope.closeModalSettings = function() {
      $scope.modalSettings.hide();
    };
+
+   /**
+    *  Initialize Property Info Modal
+    */
+   $ionicModal.fromTemplateUrl('templates/boundary-info.html', {
+       scope: $scope,
+       animation: 'slide-in-up'
+    }).then(function(modal) {
+       $scope.modalInfo = modal;
+    });
+
+    /**
+     *  Open Info Modal
+     */
+    $scope.openModalInfo = function(feature) {
+      $scope.formatBoundaryDescription();
+      $scope.seeMoreButton = true;
+      $scope.modalInfo.show();
+    };
+
+    /**
+     *  Close Info Modal
+     */
+    $scope.closeModalInfo = function() {
+      $scope.modalInfo.hide();
+    };
+
+    /**
+     *  Go to Boundary View
+     */
+    $scope.seeMore = function() {
+      $scope.closeModalInfo();
+      $state.go('boundary', {'boundaryId': $scope.boundary._id});
+    };
 
    /**
     *  Back to main menu
