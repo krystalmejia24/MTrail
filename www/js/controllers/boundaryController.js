@@ -29,9 +29,16 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
     tiles: Tiles.getTiles('Outdoors'),
     center: {
       lat: 29.59599854794921,
-			lng: -82.24021911621094,
+      lng: -82.24021911621094,
       zoom: 13
     }
+  });
+
+  /**
+   *  Retrieve boundary map and set $scope.map to further extend
+   */
+  leafletData.getMap('boundary').then(function(map) {
+      $scope.map = map;
   });
 
   /**

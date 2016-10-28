@@ -23,15 +23,39 @@ angular.module('mTrail').controller('CountyController', ['$scope',
   }
 
   /**
+   *  Show indicator for finding location
+   */
+   $scope.locationIndicator = function (setting){
+       if (ionic.Platform.isIOS() && setting === 'on') {
+           $ionicLoading.show({
+               template: 'Finding Current Location <br><br><ion-spinner icon="ios"></ion-spinner>'
+           });
+       } else if (ionic.Platform.isAndroid() && setting === 'on') {
+           $ionicLoading.show({
+               template: 'Finding Current Location <br><br><ion-spinner icon="android"></ion-spinner>'
+           });
+       } else if (setting === 'off'){
+           $ionicLoading.hide();
+       }
+   }
+
+  /**
    *  Initialize Map
    */
   angular.extend($scope, {
     tiles: Tiles.getTiles('Outdoors'),
     center: {
       lat: 29.6520,
-			lng: -82.3250,
+      lng: -82.3250,
       zoom: 13
     },
+  });
+
+  /**
+   *  Retrieve county map and set $scope.map to further extend
+   */
+  leafletData.getMap('county').then(function(map) {
+      $scope.map = map;
   });
 
   /**
@@ -55,9 +79,20 @@ angular.module('mTrail').controller('CountyController', ['$scope',
             $state.go('boundary', {'boundaryId': feature._id});
           });
         }
+      },
+      findUser: function(){
+        $scope.locationIndicator('on');
+        $scope.map.locate({ setView : true, maxZoon: 17});
+        $scope.map.on('locationfound', $scope.onLocationFound);
+      },
+      onLocationFound: function(e) {
+          if($scope.currentLocationMarker){
+              $scope.map.removeLayer($scope.currentLocationMarker);
+          }
+          $scope.currentLocationMarker = new L.marker(e.latlng).addTo($scope.map);
+          $scope.locationIndicator('off');
       }
     });
-
     $scope.boundaries = data;
     $ionicLoading.hide();
   });

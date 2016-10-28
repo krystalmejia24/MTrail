@@ -25,11 +25,11 @@ a.item-content:hover {
   font-size: 18px;
   padding-top: 25px;
 }
-#map {
+#county {
   width: 100vw;
   height: 100vh;
 }
-#boundary-map {
+#boundary {
   width: 100vw;
   height: 100vh;
 }
