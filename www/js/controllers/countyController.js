@@ -83,14 +83,45 @@ angular.module('mTrail').controller('CountyController', ['$scope',
       findUser: function(){
         $scope.locationIndicator('on');
         $scope.map.locate({ setView : true, maxZoon: 17});
-        $scope.map.on('locationfound', $scope.onLocationFound);
+        $scope.map.on('locationfound', $scope.addCustomLocationMarker);
       },
-      onLocationFound: function(e) {
-          if($scope.currentLocationMarker){
-              $scope.map.removeLayer($scope.currentLocationMarker);
-          }
-          $scope.currentLocationMarker = new L.marker(e.latlng).addTo($scope.map);
-          $scope.locationIndicator('off');
+      addCustomLocationMarker: function(e) {
+        // add radius circle marker
+        if($scope.radiusCircle){
+            $scope.map.removeLayer($scope.radiusCircle);
+        }
+        $scope.radiusCircle = L.circle(e.latlng, e.accuracy, {
+            stroke: false,
+            fillColor: '#3473e2',
+            opacity: 0.2,
+            fillOpacity: 0.2
+        }).addTo($scope.map);
+
+        // add outer circle marker
+        if($scope.outerCircle){
+            $scope.map.removeLayer($scope.outerCircle);
+        }
+        $scope.outerCircle = L.circleMarker(e.latlng, {
+            fillColor: '#3473e2',
+            opacity: 0.5,
+            weight: 1,
+            fillOpacity: 0.5
+        }).setRadius(10).addTo($scope.map);
+
+        // add inner circle marker
+        if($scope.innerCircle){
+            $scope.map.removeLayer($scope.innerCircle);
+        }
+        $scope.innerCircle = L.circleMarker(e.latlng, {
+            fillColor: '#3473e2',
+            color: 'white',
+            opacity: 1,
+            weight: 2,
+            fillOpacity: 1
+        }).setRadius(7).addTo($scope.map);
+
+        // turn off location indicator
+        $scope.locationIndicator('off');
       }
     });
     $scope.boundaries = data;
