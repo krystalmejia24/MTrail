@@ -77,6 +77,10 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
           var poly = L.geoJson(feature);
           $scope.center = poly.getBounds().getCenter();
           $scope.center.zoom = 13;
+          //make clickable - open modal
+          layer.on('click', function (e) {
+            $scope.openModalInfo();
+          });
         }
       }
     });
@@ -152,6 +156,13 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
       */
      $scope.closeModalInfo = function() {
        $scope.modalInfo.hide();
+     };
+
+     /**
+      *  Open default map application (Google Maps or Apple Maps)
+      */
+     $scope.getDirections = function() {
+         launchnavigator.navigate([$scope.center.lat, $scope.center.lng]);
      };
 
      /**
