@@ -162,6 +162,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
       *  Open default map application (Google Maps or Apple Maps)
       */
      $scope.getDirections = function() {
+         $scope.closeModalInfo();
          launchnavigator.navigate([$scope.center.lat, $scope.center.lng]);
      };
 
