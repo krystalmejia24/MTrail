@@ -28,8 +28,8 @@ angular.module('mTrail').controller('MenuController', ['$scope',
   /**
    *  Go to settings
    */
-  $scope.goToSettings = function () {
-    $state.go('settings');
+  $scope.goToFilters = function () {
+    $state.go('filters');
   };
 
   /**

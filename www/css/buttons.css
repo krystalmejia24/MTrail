@@ -17,6 +17,22 @@ button#settings i{
   border-color: black;
 }
 */
+button#filters i{
+  position: absolute;
+  background-color: white;
+  border-radius: 4px;
+  top: 2vh;
+  right: 3vw;
+  font-size: 22px;
+  padding-top:1px;
+  line-height: 29px;
+  width: 29px;
+  height: 29px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+  z-index: 1000;
+  cursor: pointer;
+  border-color: black;
+}
 button#info{
   position: absolute;
   background-color: white;
@@ -66,4 +82,18 @@ i#close{
   border-radius: 4px;
   border: none;
   z-index: 1000;
+}
+.button-bar > .button{
+    border: 0.5px solid black;
+    color: white;
+    background-color: #407186;
+    font-weight: 600;
+}
+button#filter-button{
+    font-weight: 600;
+    border: 1px solid #407186;
+    color: #407186;
+}
+button#filter-clear-button{
+    font-weight: 600;
 }

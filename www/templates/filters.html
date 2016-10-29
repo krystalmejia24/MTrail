@@ -1,0 +1,38 @@
+<ion-modal-view id="filters-modal">
+  <ion-content>
+      <div class="list list-inset" id="modal-border">
+          <div class="item item-divider">
+              <h2>Property Filters</h2>
+              <i id="close" class="icon ion-close" ng-click="closeModalFilters()"></i>
+          </div>
+          <!-- Acres Filter -->
+          <div id="item-info">
+              <b> Filter By Acres </b>
+              <div id="filter-text" ng-if="!filter.acres">None Set</div>
+              <div id="filter-text" ng-if="filter.acres">{{filter.acres.min}} - {{filter.acres.max}} sq ft</div>
+              <div class="button-bar">
+                  <a class="button button-small" ng-click="filterAcreSize('small')">Small</a>
+                  <a class="button button-small" ng-click="filterAcreSize('medium')">Med</a>
+                  <a class="button button-small" ng-click="filterAcreSize('large')">Large</a>
+              </div>
+          </div>
+          <!-- Radius filter -->
+          <div id="item-info">
+              <b> Filter By Mile Radius </b>
+              <div id="filter-text" ng-if="!filter.radius">None Set</div>
+              <div id="filter-text" ng-if="filter.radius < 25">{{filter.radius}}mi</div>
+              <div id="filter-text" ng-if="filter.radius == 25">25+mi</div>
+              <div class="range range-calm">
+                  <i class="icon ion-android-walk"></i>
+                  <input type="range" min="0" max="25" value={{filter.initialRadius}} ng-model="filter.radius">
+                  <i class="icon ion-model-s"></i>
+              </div>
+          </div>
+          <!-- clear filters -->
+          <div id="item-info">
+              <button id="filter-button" class="button button-block button-small" ng-click="setFilters()">Set Filters</button>
+              <button id="filter-clear-button" class="button button-block button-small button-outline button-assertive" ng-click="clearFilters()">Clear Filters</button>
+          </div>
+      </div>
+  </ion-content>
+</ion-modal-view>

@@ -212,6 +212,33 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     };
 
     /**
+     *  Initialize Filters Modal
+     */
+    $ionicModal.fromTemplateUrl('templates/filters.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+     }).then(function(modal) {
+        $scope.modalFilters = modal;
+     });
+
+     /**
+      *  Open Filters Modal
+      */
+     $scope.openModalFilters = function() {
+       $scope.modalFilters.show();
+       $scope.filter= {
+           initialRadius: '50'
+       }
+     };
+
+     /**
+      *  Close Filters Modal
+      */
+     $scope.closeModalFilters = function() {
+       $scope.modalFilters.hide();
+     };
+
+    /**
      *  Go to Boundary View
      */
     $scope.seeMore = function() {
@@ -233,6 +260,35 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    $scope.viewList = function() {
      $scope.closeModalSettings();
      $state.go('list');
+   };
+
+   /**
+    *  Set filters
+    */
+   $scope.setFilters = function() {
+     console.log($scope.filter.radius);
+   };
+
+   /**
+    *  Set filters acre size
+    */
+   $scope.filterAcreSize = function(size) {
+     if(size === 'large'){
+         $scope.filter.acres = {
+             min: 1000,
+             max: 10000
+         }
+     } else if(size === 'medium'){
+         $scope.filter.acres = {
+             min: 400,
+             max: 999
+         }
+     } else if(size === 'small'){
+         $scope.filter.acres = {
+             min: 0,
+             max: 399
+         }
+     }
    };
 
 }]);

@@ -30,6 +30,15 @@ a.item-content:hover {
   right: 5%;
   background-color: transparent;
 }
+#filters-modal {
+  width: 90%;
+  left: 5%;
+  bottom: 5%;
+  top: 5%;
+  right: 5%;
+  background-color: transparent;
+  text-align: center;
+}
 #info-modal {
   width: 90%;
   height: 100%;
@@ -52,4 +61,13 @@ a.item-content:hover {
     background-color: rgba(0,0,0,.6);
     position: relative;
     z-index: 10;
+}
+#item-info{
+    margin: 30px 25px;
+    font-size: 15px;
+}
+#filter-text{
+    margin: 10px;
+    color: #407186;
+    font-weight: 600;
 }
