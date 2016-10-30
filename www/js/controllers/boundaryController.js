@@ -26,7 +26,7 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    *  Initialize map w/ default params
    */
   angular.extend($scope, {
-    tiles: Tiles.getTiles('Outdoors'),
+    tiles: $stateParams.tiles || Tiles.getTiles('Outdoors'),
     center: {
       lat: 29.59599854794921,
       lng: -82.24021911621094,
@@ -66,10 +66,10 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
       geojson: {
         data: data,
         style: {
-          fillColor: 'black',
+          fillColor: Tiles.getColor($scope.tiles.name),
           weight: 2,
           opacity: 0.5,
-          color: 'black',
+          color: Tiles.getColor($scope.tiles.name),
           dashArray: '1',
           fillOpacity: 0.1
         },
@@ -95,14 +95,16 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
    */
    $scope.changeTiles = function (tile) {
      $scope.tiles = Tiles.getTiles(tile);
+     $scope.geojson.style.color = Tiles.getColor($scope.tiles.name);
+     $scope.geojson.style.fillColor = Tiles.getColor($scope.tiles.name);
      $scope.closeModalSettings();
    };
 
    /**
     *  Find Current Tile - Modal functionality
     */
-   $scope.isCurrentTile = function (tileName) {
-     if ($scope.tiles.name === tileName) {
+   $scope.isCurrentTile = function (tile) {
+     if ($scope.tiles.name === tile) {
        return true;
      } else {
        return false;

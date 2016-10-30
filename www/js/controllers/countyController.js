@@ -67,10 +67,10 @@ angular.module('mTrail').controller('CountyController', ['$scope',
       geojson: {
         data: data,
         style: {
-          fillColor: 'black',
+          fillColor: Tiles.getColor('Mapbox Outdoors'),
           weight: 2,
           opacity: 0.5,
-          color: 'black',
+          color: Tiles.getColor('Mapbox Outdoors'),
           dashArray: '1',
           fillOpacity: 0.1
         },
@@ -134,6 +134,8 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $scope.changeTiles = function (tile) {
     $scope.tiles = Tiles.getTiles(tile);
+    $scope.geojson.style.color = Tiles.getColor($scope.tiles.name);
+    $scope.geojson.style.fillColor = Tiles.getColor($scope.tiles.name);
     $scope.closeModalSettings();
   };
 
@@ -243,7 +245,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
      */
     $scope.seeMore = function() {
       $scope.closeModalInfo();
-      $state.go('boundary', {'boundaryId': $scope.boundary._id});
+      $state.go('boundary', {'boundaryId': $scope.boundary._id, 'tiles': $scope.tiles});
     };
 
    /**

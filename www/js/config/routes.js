@@ -22,7 +22,8 @@ angular.module('mTrail').config(function($stateProvider, $urlRouterProvider) {
     templateUrl: 'templates/boundary.html',
     controller: 'BoundaryController',
     params: {
-          boundaryId: Number
+          boundaryId: Number,
+          tiles: null
     },
   });
 

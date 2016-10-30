@@ -1,4 +1,4 @@
-angular.module('mTrail').service('Tiles', function () {
+angular.module('mTrail').factory('Tiles', function () {
 
   var customTiles = {
     Default: {
@@ -50,8 +50,23 @@ angular.module('mTrail').service('Tiles', function () {
     }
   };
 
-  this.getTiles = function(tile){
+  var customColor = {
+      'Mapbox Default': '#407186',
+      'Mapbox Dark': '#9BC152',
+      'Mapbox Satellite': '#9BC152',
+      'Mapbox Outdoors': 'black',
+      'Mapbox Basic': 'black',
+  };
+
+  var service = {};
+
+  service.getTiles = function(tile){
     return customTiles[tile];
   };
 
+  service.getColor = function(tile){
+    return customColor[tile];
+  };
+
+  return service;
 });
