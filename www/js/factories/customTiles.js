@@ -51,7 +51,7 @@ angular.module('mTrail').factory('Tiles', function () {
   };
 
   var customColor = {
-      'Mapbox Default': '#407186',
+      'Mapbox Default': '#25602b',
       'Mapbox Dark': '#9BC152',
       'Mapbox Satellite': '#9BC152',
       'Mapbox Outdoors': 'black',

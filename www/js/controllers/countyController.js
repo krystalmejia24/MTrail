@@ -39,6 +39,23 @@ angular.module('mTrail').controller('CountyController', ['$scope',
        }
    }
 
+   /**
+    *  Show indicator for filtering
+    */
+    $scope.filterIndicator = function (setting){
+        if (ionic.Platform.isIOS() && setting === 'on') {
+            $ionicLoading.show({
+                template: 'Searching <br><br><ion-spinner icon="ios"></ion-spinner>'
+            });
+        } else if (ionic.Platform.isAndroid() && setting === 'on') {
+            $ionicLoading.show({
+                template: 'Searching <br><br><ion-spinner icon="android"></ion-spinner>'
+            });
+        } else if (setting === 'off'){
+            $ionicLoading.hide();
+        }
+    }
+
   /**
    *  Initialize Map
    */
@@ -59,11 +76,66 @@ angular.module('mTrail').controller('CountyController', ['$scope',
   });
 
   /**
+   *  Find current location
+   */
+  $scope.findUser = function() {
+     $scope.locationIndicator('on');
+     $scope.map.locate({ setView : true, maxZoon: 17});
+     $scope.map.on('locationfound', $scope.addCustomLocationMarker);
+  };
+
+  /**
+   * Add custom current location marker
+   */
+  $scope.addCustomLocationMarker = function(e) {
+    //set current location coordinates
+    $scope.currentLocation = e.latlng;
+
+    // add radius circle marker
+    if($scope.radiusCircle){
+        $scope.map.removeLayer($scope.radiusCircle);
+    }
+    $scope.radiusCircle = L.circle(e.latlng, e.accuracy, {
+        stroke: false,
+        fillColor: '#3473e2',
+        opacity: 0.2,
+        fillOpacity: 0.2
+    }).addTo($scope.map);
+
+    // add outer circle marker
+    if($scope.outerCircle){
+        $scope.map.removeLayer($scope.outerCircle);
+    }
+    $scope.outerCircle = L.circleMarker(e.latlng, {
+        fillColor: '#3473e2',
+        opacity: 0.5,
+        weight: 1,
+        fillOpacity: 0.5
+    }).setRadius(10).addTo($scope.map);
+
+    // add inner circle marker
+    if($scope.innerCircle){
+        $scope.map.removeLayer($scope.innerCircle);
+    }
+    $scope.innerCircle = L.circleMarker(e.latlng, {
+        fillColor: '#3473e2',
+        color: 'white',
+        opacity: 1,
+        weight: 2,
+        fillOpacity: 1
+    }).setRadius(7).addTo($scope.map);
+
+    // turn off location indicator
+    $scope.locationIndicator('off');
+  };
+
+
+  /**
    *  Retrieve Boundaries - HTTP GET request
    */
   $http.get("https://act-trailblazer.herokuapp.com/api/boundaries")
   .success(function(data, status) {
-    angular.extend($scope, {
+    /*angular.extend($scope, {
       geojson: {
         data: data,
         style: {
@@ -80,52 +152,26 @@ angular.module('mTrail').controller('CountyController', ['$scope',
             $scope.openModalInfo();
           });
         }
-      },
-      findUser: function(){
-        $scope.locationIndicator('on');
-        $scope.map.locate({ setView : true, maxZoon: 17});
-        $scope.map.on('locationfound', $scope.addCustomLocationMarker);
-      },
-      addCustomLocationMarker: function(e) {
-        // add radius circle marker
-        if($scope.radiusCircle){
-            $scope.map.removeLayer($scope.radiusCircle);
-        }
-        $scope.radiusCircle = L.circle(e.latlng, e.accuracy, {
-            stroke: false,
-            fillColor: '#3473e2',
-            opacity: 0.2,
-            fillOpacity: 0.2
-        }).addTo($scope.map);
-
-        // add outer circle marker
-        if($scope.outerCircle){
-            $scope.map.removeLayer($scope.outerCircle);
-        }
-        $scope.outerCircle = L.circleMarker(e.latlng, {
-            fillColor: '#3473e2',
-            opacity: 0.5,
-            weight: 1,
-            fillOpacity: 0.5
-        }).setRadius(10).addTo($scope.map);
-
-        // add inner circle marker
-        if($scope.innerCircle){
-            $scope.map.removeLayer($scope.innerCircle);
-        }
-        $scope.innerCircle = L.circleMarker(e.latlng, {
-            fillColor: '#3473e2',
-            color: 'white',
-            opacity: 1,
-            weight: 2,
-            fillOpacity: 1
-        }).setRadius(7).addTo($scope.map);
-
-        // turn off location indicator
-        $scope.locationIndicator('off');
       }
     });
+    */
     $scope.boundaries = data;
+    $scope.geoLayer = L.geoJson($scope.boundaries, {
+        style: {
+          fillColor: Tiles.getColor('Mapbox Outdoors'),
+          weight: 2,
+          opacity: 0.5,
+          color: Tiles.getColor('Mapbox Outdoors'),
+          dashArray: '1',
+          fillOpacity: 0.1
+        },
+        onEachFeature: function (feature, layer) {
+          layer.on('click', function (e) {
+            $scope.boundary = feature;
+            $scope.openModalInfo();
+          });
+        }
+    }).addTo($scope.map);
     $ionicLoading.hide();
   });
 
@@ -134,8 +180,14 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $scope.changeTiles = function (tile) {
     $scope.tiles = Tiles.getTiles(tile);
-    $scope.geojson.style.color = Tiles.getColor($scope.tiles.name);
-    $scope.geojson.style.fillColor = Tiles.getColor($scope.tiles.name);
+    $scope.geoLayer.setStyle({
+      fillColor: Tiles.getColor($scope.tiles.name),
+      weight: 2,
+      opacity: 0.5,
+      color: Tiles.getColor($scope.tiles.name),
+      dashArray: '1',
+      fillOpacity: 0.1
+    });
     $scope.closeModalSettings();
   };
 
@@ -265,13 +317,6 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    };
 
    /**
-    *  Set filters
-    */
-   $scope.setFilters = function() {
-     console.log($scope.filter.radius);
-   };
-
-   /**
     *  Set filters acre size
     */
    $scope.filterAcreSize = function(size) {
@@ -292,5 +337,102 @@ angular.module('mTrail').controller('CountyController', ['$scope',
          }
      }
    };
+   $scope.redraw = function() {
+      if($scope.filteredList){
+           $scope.geoLayer = L.geoJson($scope.filteredList, {
+               style: {
+                 fillColor: Tiles.getColor($scope.tiles.name),
+                 weight: 2,
+                 opacity: 0.5,
+                 color: Tiles.getColor($scope.tiles.name),
+                 dashArray: '1',
+                 fillOpacity: 0.1
+               },
+               onEachFeature: function (feature, layer) {
+                 layer.on('click', function (e) {
+                   $scope.boundary = feature;
+                   $scope.openModalInfo();
+                 });
+               }
+           }).addTo($scope.map);
+       } else {
+           $scope.geoLayer = L.geoJson($scope.boundaries, {
+               style: {
+                 fillColor: Tiles.getColor($scope.tiles.name),
+                 weight: 2,
+                 opacity: 0.5,
+                 color: Tiles.getColor($scope.tiles.name),
+                 dashArray: '1',
+                 fillOpacity: 0.1
+               },
+               onEachFeature: function (feature, layer) {
+                 layer.on('click', function (e) {
+                   $scope.boundary = feature;
+                   $scope.openModalInfo();
+                 });
+               }
+           }).addTo($scope.map);
+       }
+    };
+
+   $scope.updateRadiusMarker = function() {
+       if($scope.circleMileRadius){
+           $scope.map.removeLayer($scope.circleMileRadius);
+       }
+       $scope.circleMileRadius = L.circle($scope.currentLocation, $scope.filter.radius*1609.34, {  //determine user location and draws circle
+           clickable: false,
+           stroke: true,
+           fillColor: '#3473e2',
+           weight: 1,
+           opacity: 1,
+           fillOpacity: 0.05
+        }).addTo($scope.map);
+        $scope.map.panTo($scope.currentLocation, { animate: true, duration: 0.5 }); //centers to current location
+        $scope.filterIndicator('off');
+
+        // create filtered list and redraw the map
+        $scope.filteredList = $scope.boundaries;
+        for (var i = 0; i < $scope.boundaries.length; i++) {
+            var poly = L.geoJson($scope.boundaries[i]);
+            if($scope.circleMileRadius.getBounds().contains(poly.getBounds().getCenter())){
+                $scope.filteredList.splice(i,1);
+            }
+        }
+        console.log($scope.filteredList);
+        $scope.redraw();
+   };
+
+   $scope.filterMileRadius = function() {
+       if($scope.currentLocation) {
+           $scope.radiusBounds = $scope.updateRadiusMarker();
+       } else {
+           $scope.map.locate({ setView : true, maxZoom : 12 }); //locates user and centers on them
+           $scope.map.on('locationfound', function (e) {
+                $scope.currentLocation = e.latlng;
+                $scope.addCustomLocationMarker(e);
+                $scope.radiusBounds = $scope.updateRadiusMarker();
+           });
+       }
+    };
+
+    /**
+     *  Set filters
+     */
+    $scope.setFilters = function() {
+      $scope.map.removeLayer($scope.geoLayer);
+      $scope.filterIndicator('on');
+      $scope.closeModalFilters();
+      $scope.filterMileRadius();
+    };
+
+    /**
+     *  Clear filters
+     */
+    $scope.clearFilters = function() {
+      if($scope.circleMileRadius){
+          $scope.map.removeLayer($scope.circleMileRadius);
+      }
+      $scope.closeModalFilters();
+    };
 
 }]);
