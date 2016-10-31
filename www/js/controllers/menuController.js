@@ -43,7 +43,7 @@ angular.module('mTrail').controller('MenuController', ['$scope',
    *  Go to boundary map view
    */
   $scope.goToBoundary = function (boundary) {
-    $state.go('boundary', {'boundaryId': boundary._id});
+    $state.go('boundary', {'boundary': boundary, 'boundaryName': $scope.boundary.properties.MANAME});
   };
 
 }]);

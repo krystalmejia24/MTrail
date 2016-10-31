@@ -314,7 +314,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
      */
     $scope.seeMore = function() {
       $scope.closeModalInfo();
-      $state.go('boundary', {'boundaryId': $scope.boundary._id, 'tiles': $scope.tiles});
+      $state.go('boundary', {'boundary': $scope.boundary, 'tiles': $scope.tiles,});
     };
 
    /**
@@ -397,7 +397,15 @@ angular.module('mTrail').controller('CountyController', ['$scope',
         }
 
         //check for radius filter and update filter list
-        if ($scope.filter.radius) {
+        //if acre filter is activated, filter that list, if not, filter all the properties
+        if ($scope.filter.radius && $scope.acreFilter) {
+            for (var i = 0; i < filterList.length; i++) {
+                var poly = L.geoJson(filterList[i]);
+                if($scope.circleMileRadius.getBounds().contains(poly.getBounds().getCenter())){
+                    filterList.push(filterList[i]);
+                }
+            }
+        } else if ($scope.filter.radius) {
             for (var i = 0; i < $scope.boundaries.length; i++) {
                 var poly = L.geoJson($scope.boundaries[i]);
                 if($scope.circleMileRadius.getBounds().contains(poly.getBounds().getCenter())){

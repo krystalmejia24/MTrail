@@ -55,48 +55,105 @@ angular.module('mTrail').controller('BoundaryController', ['$scope',
   });
 
   /**
-   *  Retrieve Boundaries (HTTP GET request)
-   *  Draw Map, Update center
-   *  TO DO: Update zoom
-   *         Update boundary info view
+   *  Custom style settings for the maps
    */
-  $http.get("https://act-trailblazer.herokuapp.com/api/boundaries/" + $stateParams.boundaryId)
-  .success(function(data, status) {
-    angular.extend($scope, {
-      geojson: {
-        data: data,
-        style: {
+  $scope.setStyle = function() {
+      return {
           fillColor: Tiles.getColor($scope.tiles.name),
           weight: 2,
           opacity: 0.5,
           color: Tiles.getColor($scope.tiles.name),
           dashArray: '1',
-          fillOpacity: 0.1
-        },
-        onEachFeature: function (feature, layer) {
-          var poly = L.geoJson(feature);
-          $scope.center = poly.getBounds().getCenter();
-          $scope.center.zoom = 13;
-          //make clickable - open modal
-          layer.on('click', function (e) {
-            $scope.openModalInfo();
-          });
-        }
+          fillOpacity: 0.01
       }
-    });
-    // format boundary info
-    $scope.boundary = data;
-    $scope.formatBoundaryDescription();
-    $ionicLoading.hide();
-  });
+  };
+
+  /**
+   *  Draw Icons on map
+   */
+  $scope.drawIcons = function() {
+      var headIcon = L.Icon.Default.extend({
+         options: {
+            iconUrl: 'img/icons/black/head.svg',
+             shadowSize: [0, 0]
+         }
+      });
+
+      var parkingIcon = L.Icon.Default.extend({
+         options: {
+            iconUrl: 'img/icons/black/parking.svg',
+             shadowSize: [0, 0]
+         }
+      });
+
+      for (var i = 0; i < $scope.icons.length; i++) {
+          var location = L.latLng($scope.icons[i].geometry.coordinates[1], $scope.icons[i].geometry.coordinates[0]);
+
+          if ($scope.icons[i].properties.Name === 'parking') {
+              var icon = new parkingIcon();
+              L.marker(location, {icon: icon}).addTo($scope.map);
+          }
+
+          if ($scope.icons[i].properties.Name === 'head') {
+              var icon = new headIcon();
+              L.marker(location, {icon: icon}).addTo($scope.map);
+          }
+      }
+
+  };
+
+  /**
+   *  Draw Boundary on Map
+   */
+   $scope.drawBoundary = function() {
+       $scope.boundary = $stateParams.boundary;
+       $scope.geoLayer = L.geoJson($scope.boundary, {
+          style: $scope.setStyle,
+          onEachFeature: function (feature, layer) {
+              var poly = L.geoJson(feature);
+              $scope.center = poly.getBounds().getCenter();
+              $scope.center.zoom = 13;
+          }
+      }).addTo($scope.map);
+
+      // format boundary info
+      $scope.formatBoundaryDescription();
+      $scope.drawIcons();
+      $ionicLoading.hide();
+    };
+
+  /**
+   *  Retrieve Trails (HTTP GET request)
+   */
+   $http.get("https://act-trailblazer.herokuapp.com/api/trails")
+   .success(function(data, status) {
+      $scope.trails = [];
+      $scope.icons = [];
+      for (var i = 0; i < data.length; i++) {
+           if(data[i].properties.boundary === $stateParams.boundary.properties.MANAME && data[i].properties.color != 'null') {
+              $scope.trails.push(data[i]);
+          } else if (data[i].properties.boundary === $stateParams.boundary.properties.MANAME) {
+              $scope.icons.push(data[i]);
+          }
+       }
+       L.geoJson($scope.trails, {
+         style: function(feature){
+              return {
+                  color: feature.properties.color,
+                  weight : 2,
+                  dashArray: '3'
+              };
+         }
+      }).addTo($scope.map);
+     $scope.drawBoundary();
+     });
 
   /**
    *  Change Tile settings
    */
    $scope.changeTiles = function (tile) {
      $scope.tiles = Tiles.getTiles(tile);
-     $scope.geojson.style.color = Tiles.getColor($scope.tiles.name);
-     $scope.geojson.style.fillColor = Tiles.getColor($scope.tiles.name);
+     $scope.geoLayer.setStyle($scope.setStyle);
      $scope.closeModalSettings();
    };
 
