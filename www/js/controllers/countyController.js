@@ -105,17 +105,20 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $scope.findUser = function() {
      $scope.locationIndicator('on');
-     $scope.map.locate({ setView : true, maxZoon: 17});
-     $scope.map.on('locationfound', $scope.addCustomLocationMarker);
+     $scope.map.locate({ setView : true, maxZoon: 13});
+     $scope.map.on('locationfound', function (e) {
+          $scope.currentLocation = e.latlng;
+          $scope.addCustomLocationMarker(e);
+     });
+     $scope.map.on('locationerror', function(e){
+            alert(e);
+     });
   };
 
   /**
    * Add custom current location marker
    */
   $scope.addCustomLocationMarker = function(e) {
-    //set current location coordinates
-    $scope.currentLocation = e.latlng;
-
     // add radius circle marker
     if($scope.radiusCircle){
         $scope.map.removeLayer($scope.radiusCircle);
@@ -149,6 +152,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
         weight: 2,
         fillOpacity: 1
     }).setRadius(7).addTo($scope.map);
+    $scope.map.setView($scope.currentLocation, 12, { animate: true, duration: 0.5 });
 
     // turn off location indicator
     $scope.locationIndicator('off');
@@ -388,7 +392,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     /**
      *  Updates/Creates the marker for the radius filter
      */
-   $scope.updateRadiusMarker = function() {
+   $scope.createRadiusMarker = function() {
        if($scope.circleMileRadius){
            $scope.map.removeLayer($scope.circleMileRadius);
        }
@@ -405,23 +409,23 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    };
 
    /**
-    *  Checks for current location before updating the radius mile marker
+    *  Retrieve current location before updating the radius mile marker
     */
-   $scope.filterLocationCheck = function() {
-       if($scope.currentLocation) {
-           $scope.updateRadiusMarker();
-       } else {
-           $scope.map.locate({ setView : true, maxZoom : 12 }); //locates user and centers on them
-           $scope.map.on('locationfound', function (e) {
-                $scope.currentLocation = e.latlng;
-                $scope.addCustomLocationMarker(e);
-                $scope.updateRadiusMarker();
-           });
-       }
+   $scope.filterLocation = function() {
+       $scope.map.locate({ setView : true, maxZoon: 13});
+       $scope.map.on('locationfound', function (e) {
+            $scope.currentLocation = e.latlng;
+            $scope.addCustomLocationMarker(e);
+            $scope.createRadiusMarker();
+       });
+       $scope.map.on('locationerror', function(e){
+              alert(e);
+       });
     };
 
     /**
      *  Set filters
+     *  To Do : output error window that no filters were selected
      */
     $scope.setFilters = function() {
       if ($scope.filter.radius || $scope.acreFilter) {
@@ -431,10 +435,13 @@ angular.module('mTrail').controller('CountyController', ['$scope',
 
           //call appropriate filters based on input
           if ($scope.filter.radius) {
-              $scope.filterLocationCheck();
+              if($scope.currentLocation) {
+                  $scope.createRadiusMarker();
+              } else {
+                   $scope.filterLocation();
+              }
           } else{
               $scope.updateFilterList();
-              console.log('here');
           }
       } else {
           console.log('error');
