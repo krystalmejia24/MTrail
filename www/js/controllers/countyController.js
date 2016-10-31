@@ -7,7 +7,8 @@ angular.module('mTrail').controller('CountyController', ['$scope',
                                                         '$ionicLoading',
                                                         '$ionicModal',
                                                         'Tiles',
-  function ($scope, leafletData, $http, $ionicHistory, $state, $stateParams, $ionicLoading, $ionicModal, Tiles) {
+                                                        '$cordovaGeolocation',
+  function ($scope, leafletData, $http, $ionicHistory, $state, $stateParams, $ionicLoading, $ionicModal, Tiles, $cordovaGeolocation) {
 
   /**
    *  Show loading indicator, styling based on platform
@@ -105,25 +106,45 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $scope.findUser = function() {
      $scope.locationIndicator('on');
-     $scope.map.locate({ setView : true, maxZoon: 13});
+     $scope.map.locate({ setView : true, maxZoon: 13, enableHighAccuracy: true});
      $scope.map.on('locationfound', function (e) {
           $scope.currentLocation = e.latlng;
-          $scope.addCustomLocationMarker(e);
+          $scope.addCustomLocationMarker(e.accuracy);
      });
      $scope.map.on('locationerror', function(e){
-            alert(e);
+         console.log(e);
+         alert(e);
      });
+  };
+
+  $scope.locationOptions = function() {
+      return {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
+      }
+  };
+
+  $scope.test = function() {
+    $scope.locationIndicator('on');
+    $cordovaGeolocation.getCurrentPosition($scope.locationOptions).then(function (position) {
+        $scope.currentLocation = L.latLng(position.coords.latitude, position.coords.longitude);
+        $scope.addCustomLocationMarker(position.coords.accuracy);
+    }, function(err) {
+            $scope.locationIndicator('off');
+            alert(err);
+    });
   };
 
   /**
    * Add custom current location marker
    */
-  $scope.addCustomLocationMarker = function(e) {
+  $scope.addCustomLocationMarker = function(accuracy) {
     // add radius circle marker
     if($scope.radiusCircle){
         $scope.map.removeLayer($scope.radiusCircle);
     }
-    $scope.radiusCircle = L.circle(e.latlng, e.accuracy, {
+    $scope.radiusCircle = L.circle($scope.currentLocation, accuracy, {
         stroke: false,
         fillColor: '#3473e2',
         opacity: 0.2,
@@ -134,7 +155,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     if($scope.outerCircle){
         $scope.map.removeLayer($scope.outerCircle);
     }
-    $scope.outerCircle = L.circleMarker(e.latlng, {
+    $scope.outerCircle = L.circleMarker($scope.currentLocation, {
         fillColor: '#3473e2',
         opacity: 0.5,
         weight: 1,
@@ -145,7 +166,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     if($scope.innerCircle){
         $scope.map.removeLayer($scope.innerCircle);
     }
-    $scope.innerCircle = L.circleMarker(e.latlng, {
+    $scope.innerCircle = L.circleMarker($scope.currentLocation, {
         fillColor: '#3473e2',
         color: 'white',
         opacity: 1,
@@ -421,6 +442,16 @@ angular.module('mTrail').controller('CountyController', ['$scope',
        $scope.map.on('locationerror', function(e){
               alert(e);
        });
+       /*
+       $cordovaGeolocation.getCurrentPosition($scope.locationOptions).then(function (position) {
+           $scope.currentLocation = L.latLng(position.coords.latitude, position.coords.longitude);
+           $scope.addCustomLocationMarker(position.coords.accuracy);
+           $scope.createRadiusMarker();
+       }, function(err) {
+               $ionicLoading.hide();
+               alert(err);
+       });
+       */
     };
 
     /**

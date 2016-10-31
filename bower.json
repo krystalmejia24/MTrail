@@ -12,8 +12,7 @@
     "angular-ui-utils": "bower",
     "angular-ui-router": "~0.2",
     "angular-leaflet-directive": "^0.10.0",
-    "leaflet-plugins": "^1.4.3",
-    "angular-awesome-slider": "~2.4.4"
+    "leaflet-plugins": "^1.4.3"
   },
   "resolutions": {
     "angular-animate": "1.5.3",
