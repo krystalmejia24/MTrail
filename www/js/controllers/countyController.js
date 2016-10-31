@@ -69,11 +69,36 @@ angular.module('mTrail').controller('CountyController', ['$scope',
   });
 
   /**
+   *  Custom style settings for the maps
+   */
+  $scope.setStyle = function() {
+      return {
+          fillColor: Tiles.getColor($scope.tiles.name),
+          weight: 2,
+          opacity: 0.5,
+          color: Tiles.getColor($scope.tiles.name),
+          dashArray: '1',
+          fillOpacity: 0.1
+      }
+  };
+
+  /**
    *  Retrieve county map and set $scope.map to further extend
    */
   leafletData.getMap('county').then(function(map) {
       $scope.map = map;
   });
+
+  /**
+   *  Filter out private properties
+   */
+  $scope.privateFilter = function() {
+      for (var i = 0; i < $scope.boundaries.length; i++) {
+          if($scope.boundaries[i].properties.OWNER === 'Private Individual(s)') {
+             $scope.boundaries.splice(i,1);
+          }
+      }
+  };
 
   /**
    *  Find current location
@@ -135,41 +160,15 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $http.get("https://act-trailblazer.herokuapp.com/api/boundaries")
   .success(function(data, status) {
-    /*angular.extend($scope, {
-      geojson: {
-        data: data,
-        style: {
-          fillColor: Tiles.getColor('Mapbox Outdoors'),
-          weight: 2,
-          opacity: 0.5,
-          color: Tiles.getColor('Mapbox Outdoors'),
-          dashArray: '1',
-          fillOpacity: 0.1
-        },
-        onEachFeature: function (feature, layer) {
-          layer.on('click', function (e) {
-            $scope.boundary = feature;
-            $scope.openModalInfo();
-          });
-        }
-      }
-    });
-    */
     $scope.boundaries = data;
+    $scope.privateFilter();
     $scope.geoLayer = L.geoJson($scope.boundaries, {
-        style: {
-          fillColor: Tiles.getColor('Mapbox Outdoors'),
-          weight: 2,
-          opacity: 0.5,
-          color: Tiles.getColor('Mapbox Outdoors'),
-          dashArray: '1',
-          fillOpacity: 0.1
-        },
+        style: $scope.setStyle,
         onEachFeature: function (feature, layer) {
-          layer.on('click', function (e) {
-            $scope.boundary = feature;
-            $scope.openModalInfo();
-          });
+            layer.on('click', function (e) {
+                $scope.boundary = feature;
+                $scope.openModalInfo();
+            });
         }
     }).addTo($scope.map);
     $ionicLoading.hide();
@@ -180,14 +179,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
    */
   $scope.changeTiles = function (tile) {
     $scope.tiles = Tiles.getTiles(tile);
-    $scope.geoLayer.setStyle({
-      fillColor: Tiles.getColor($scope.tiles.name),
-      weight: 2,
-      opacity: 0.5,
-      color: Tiles.getColor($scope.tiles.name),
-      dashArray: '1',
-      fillOpacity: 0.1
-    });
+    $scope.geoLayer.setStyle($scope.setStyle);
     $scope.closeModalSettings();
   };
 
@@ -280,7 +272,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
       */
      $scope.openModalFilters = function() {
        $scope.modalFilters.show();
-       $scope.filter= {
+       $scope.filter = {
            initialRadius: '50'
        }
      };
@@ -320,6 +312,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
     *  Set filters acre size
     */
    $scope.filterAcreSize = function(size) {
+     $scope.acreFilter = true;
      if(size === 'large'){
          $scope.filter.acres = {
              min: 1000,
@@ -337,49 +330,69 @@ angular.module('mTrail').controller('CountyController', ['$scope',
          }
      }
    };
-   $scope.redraw = function() {
-      if($scope.filteredList){
-           $scope.geoLayer = L.geoJson($scope.filteredList, {
-               style: {
-                 fillColor: Tiles.getColor($scope.tiles.name),
-                 weight: 2,
-                 opacity: 0.5,
-                 color: Tiles.getColor($scope.tiles.name),
-                 dashArray: '1',
-                 fillOpacity: 0.1
-               },
-               onEachFeature: function (feature, layer) {
-                 layer.on('click', function (e) {
-                   $scope.boundary = feature;
-                   $scope.openModalInfo();
-                 });
-               }
-           }).addTo($scope.map);
-       } else {
-           $scope.geoLayer = L.geoJson($scope.boundaries, {
-               style: {
-                 fillColor: Tiles.getColor($scope.tiles.name),
-                 weight: 2,
-                 opacity: 0.5,
-                 color: Tiles.getColor($scope.tiles.name),
-                 dashArray: '1',
-                 fillOpacity: 0.1
-               },
-               onEachFeature: function (feature, layer) {
-                 layer.on('click', function (e) {
-                   $scope.boundary = feature;
-                   $scope.openModalInfo();
-                 });
-               }
-           }).addTo($scope.map);
-       }
+
+   /**
+    *  Redraws map based on filters
+    */
+   $scope.redraw = function(list) {
+      if(!$scope.filter.radius && $scope.circleMileRadius){
+           $scope.map.removeLayer($scope.circleMileRadius);
+      }
+      $scope.geoLayer = L.geoJson(list, {
+          style: $scope.setStyle,
+          onEachFeature: function (feature, layer) {
+              layer.on('click', function (e) {
+                  $scope.boundary = feature;
+                  $scope.openModalInfo();
+              });
+          }
+      }).addTo($scope.map);
+
+      // set filters to false
+      $scope.acreFilter = null;
+      $scope.filter.radius = null;
     };
 
+    /**
+     *  Update filtered List
+     */
+    $scope.updateFilterList = function() {
+        //create new empty list
+        filterList = [];
+
+        //check if acre size has been setand update filter list
+        if ($scope.acreFilter) {
+            var min = $scope.filter.acres.min;
+            var max = $scope.filter.acres.max;
+            for (var i = 0; i < $scope.boundaries.length; i++) {
+                if(min <= $scope.boundaries[i].properties.TOTACRES && $scope.boundaries[i].properties.TOTACRES <= max) {
+                    filterList.push($scope.boundaries[i]);
+                }
+            }
+        }
+
+        //check for radius filter and update filter list
+        if ($scope.filter.radius) {
+            for (var i = 0; i < $scope.boundaries.length; i++) {
+                var poly = L.geoJson($scope.boundaries[i]);
+                if($scope.circleMileRadius.getBounds().contains(poly.getBounds().getCenter())){
+                    filterList.push($scope.boundaries[i]);
+                }
+            }
+        }
+
+        $scope.redraw(filterList);
+        $scope.filterIndicator('off');
+    };
+
+    /**
+     *  Updates/Creates the marker for the radius filter
+     */
    $scope.updateRadiusMarker = function() {
        if($scope.circleMileRadius){
            $scope.map.removeLayer($scope.circleMileRadius);
        }
-       $scope.circleMileRadius = L.circle($scope.currentLocation, $scope.filter.radius*1609.34, {  //determine user location and draws circle
+       $scope.circleMileRadius = L.circle($scope.currentLocation, $scope.filter.radius * 1609.34, {
            clickable: false,
            stroke: true,
            fillColor: '#3473e2',
@@ -387,30 +400,22 @@ angular.module('mTrail').controller('CountyController', ['$scope',
            opacity: 1,
            fillOpacity: 0.05
         }).addTo($scope.map);
-        $scope.map.panTo($scope.currentLocation, { animate: true, duration: 0.5 }); //centers to current location
-        $scope.filterIndicator('off');
 
-        // create filtered list and redraw the map
-        $scope.filteredList = $scope.boundaries;
-        for (var i = 0; i < $scope.boundaries.length; i++) {
-            var poly = L.geoJson($scope.boundaries[i]);
-            if($scope.circleMileRadius.getBounds().contains(poly.getBounds().getCenter())){
-                $scope.filteredList.splice(i,1);
-            }
-        }
-        console.log($scope.filteredList);
-        $scope.redraw();
+        $scope.updateFilterList();
    };
 
-   $scope.filterMileRadius = function() {
+   /**
+    *  Checks for current location before updating the radius mile marker
+    */
+   $scope.filterLocationCheck = function() {
        if($scope.currentLocation) {
-           $scope.radiusBounds = $scope.updateRadiusMarker();
+           $scope.updateRadiusMarker();
        } else {
            $scope.map.locate({ setView : true, maxZoom : 12 }); //locates user and centers on them
            $scope.map.on('locationfound', function (e) {
                 $scope.currentLocation = e.latlng;
                 $scope.addCustomLocationMarker(e);
-                $scope.radiusBounds = $scope.updateRadiusMarker();
+                $scope.updateRadiusMarker();
            });
        }
     };
@@ -419,10 +424,21 @@ angular.module('mTrail').controller('CountyController', ['$scope',
      *  Set filters
      */
     $scope.setFilters = function() {
-      $scope.map.removeLayer($scope.geoLayer);
-      $scope.filterIndicator('on');
-      $scope.closeModalFilters();
-      $scope.filterMileRadius();
+      if ($scope.filter.radius || $scope.acreFilter) {
+          $scope.map.removeLayer($scope.geoLayer);
+          $scope.filterIndicator('on');
+          $scope.closeModalFilters();
+
+          //call appropriate filters based on input
+          if ($scope.filter.radius) {
+              $scope.filterLocationCheck();
+          } else{
+              $scope.updateFilterList();
+              console.log('here');
+          }
+      } else {
+          console.log('error');
+      }
     };
 
     /**
