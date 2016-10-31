@@ -436,7 +436,7 @@ angular.module('mTrail').controller('CountyController', ['$scope',
        $scope.map.locate({ setView : true, maxZoon: 13});
        $scope.map.on('locationfound', function (e) {
             $scope.currentLocation = e.latlng;
-            $scope.addCustomLocationMarker(e);
+            $scope.addCustomLocationMarker(e.accuracy);
             $scope.createRadiusMarker();
        });
        $scope.map.on('locationerror', function(e){
